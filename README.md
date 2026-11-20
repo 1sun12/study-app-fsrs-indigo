@@ -22,6 +22,7 @@ It's a flash card app at heart, but built around actually doing the thing instea
 * Scheduling is done by [FSRS](https://github.com/open-spaced-repetition/fsrs4anki/wiki/The-Algorithm), the same algorithm Anki uses, so cards come back right before you'd forget them
 * Code is syntax highlighted for ~80 languages
 * It works offline, and syncs between your computers through a private GitHub repo you own
+* If you use an AI assistant (Claude Code, ChatGPT, Codex…), it can write and organise cards for you through `indigo-cli`, without any AI living inside the app. See [Using Indigo with an AI assistant](#using-indigo-with-an-ai-assistant-indigo-cli)
 
 If you've enjoyed using this tool, please star this repo!
 
@@ -34,6 +35,8 @@ Grab the latest release here: **[Releases](https://github.com/1sun12/study-app-f
 | Mac (Apple Silicon and Intel) | `Indigo_0.3.0_universal.dmg` |
 | Windows 10 / 11 | `Indigo_0.3.0_x64-setup.exe` (or the `.msi`) |
 | Linux | `Indigo_0.3.0_amd64.AppImage`, `.deb` or `.rpm` |
+
+Each release also has a plain `indigo-cli` binary for every OS (`indigo-cli-Linux-X64`, `indigo-cli-macOS-ARM64`, `indigo-cli-Windows-X64.exe`). It's optional; see [Using Indigo with an AI assistant](#using-indigo-with-an-ai-assistant-indigo-cli).
 
 Linux is where I use it every day. The Mac and Windows builds come out of the same code, but I haven't put real hours into them yet, so let me know if something's off.
 
@@ -85,7 +88,7 @@ sudo dnf install ./Indigo-0.3.0-1.x86_64.rpm
 
 ### Linux, the install script (what I use)
 
-This builds Indigo from source on your machine and sets everything up for you: the packages it needs (including `ffmpeg` and `git`), Rust and Node if you don't have them, the app menu entry, and optionally sync.
+This builds Indigo from source on your machine and sets everything up for you: the packages it needs (including `ffmpeg` and `git`), Rust and Node if you don't have them, the app menu entry, `indigo-cli`, and optionally sync.
 
 ```bash
 git clone https://github.com/1sun12/study-app-fsrs-indigo.git indigo
@@ -133,7 +136,7 @@ cd indigo
 * Grade the whole card at the end: **Forgot**, **Hard**, **Good** or **Easy** (or `1`–`4`)
 * Every grade button shows when you'll see the card again, so there are no surprises
 * Steps you keep missing get flagged as weak and come back as short drills
-* `Esc` pauses. You can pick it back up later, and the timer only counts time you actually spent on it
+* `Esc` pauses. You can pick it back up later, half-typed answer included, and the timer only counts time you actually spent on it
 
 ### Adding a card
 
@@ -160,7 +163,7 @@ cd indigo
 <img src="docs/screenshots/stats.webp" alt="Stats in the light theme: time studied, reviews, streaks, a year heat map and upcoming reviews" width="100%">
 
 * Total time studied, reviews, current and longest streak
-* A GitHub style heat map of the last year
+* A GitHub style heat map of the last year, with each month labelled
 * What's due over the next two weeks and the next two months
 * **Am I improving?** compares your first attempts to your latest ones, both score and speed
 * Time per card, your grade mix, and the steps that keep tripping you up
@@ -193,14 +196,66 @@ cd indigo
 * Select cards in the Library and click **Export** to make an `.indigopack` you can send to anyone. It has the cards and their media, but none of your history
 * **Import pack** in **Settings → Data** adds a pack's cards to your library
 
-### Letting an AI assistant make cards (indigo-cli)
+## Using Indigo with an AI assistant (indigo-cli)
 
-There's no AI in Indigo, but if you use one (Claude Code, ChatGPT, Codex…) it can drive your library through `indigo-cli`, a small command line that comes with Indigo. Ask your assistant to run `indigo-cli guide` first, then say something like *"make 20 Python cards on the fundamentals"*.
+There's no AI inside Indigo, and there never will be. But writing good cards takes time, and if you already use an AI assistant (Claude Code, ChatGPT, Codex, or any tool that can run a command in a terminal), it can do that part for you.
 
-* It can add, edit, tag and organise cards, manage categories, read your stats, and change settings
-* It can't delete cards, sync, or study and grade for you. Those stay with you, in the app
-* New cards land on your shelf like any card you add, and sync the next time the app does
-* The install script puts it next to `indigo`; the releases page has it for Mac, Windows and Linux. Full guide: [docs/CLI.md](docs/CLI.md)
+`indigo-cli` is a small command line that ships with Indigo. It gives your assistant the same controls you have in the app, as plain JSON in and out, along with a built-in guide that tells it how to use them. It works a lot like an MCP server would, except nothing runs in the background: no server, no network port, no account. The assistant runs a command, reads the answer, and decides what to do next.
+
+### Getting started
+
+1. Make sure Indigo has been opened at least once on this computer (that creates your library)
+2. Install `indigo-cli`:
+   * The Linux install script puts it next to `indigo` for you
+   * Otherwise download it from [Releases](https://github.com/1sun12/study-app-fsrs-indigo/releases/latest), rename it to `indigo-cli` (`indigo-cli.exe` on Windows) and put it somewhere on your `PATH`
+3. Check it works: `indigo-cli guide` prints the guide
+4. Tell your assistant something like:
+
+   > Run `indigo-cli guide` and read it, then make 20 Python cards on the fundamentals.
+
+That's it. The assistant reads the guide, finds or creates the category, checks what cards you already have so it doesn't duplicate them, writes the new ones in one go, and tells you what it added.
+
+### Things you can ask for
+
+* *"Make 15 Rust cards on ownership and borrowing, typed answers where it's code."*
+* *"Turn the notes in `chapter3.md` into recall cards in my Networking category."*
+* *"Tag every C card about pointers with `pointers`."*
+* *"Move my Godot cards that are really about GDScript into a GDScript category."*
+* *"Which categories have the most weak steps? Rewrite the prompts on those cards so they're clearer."*
+* *"How much did I study this month, and what's coming up next week?"*
+
+### What it can and can't do
+
+| It can | It can't |
+| --- | --- |
+| Add, edit, tag, move and suspend cards | Delete a card, or do anything that would make one disappear |
+| Create, rename, recolour and remove empty categories | Sync, or change your sync repository |
+| Rename, merge and remove tags | Study, or grade a card for you |
+| Attach images, audio and video to cards | Create a library from nothing |
+| Read stats, schedules and due dates | |
+| Change settings, export and import backups and packs | |
+
+The "can't" column is on purpose:
+* **Deleting cards** is yours to do, in the app. A backup import or conflict restore that would remove one is refused
+* **Syncing** stays with the app, which already syncs on its own. Anything the assistant changes goes to your other computers the next time Indigo syncs
+* **Grading** is what schedules your reviews, so only you do it
+
+### Good to know
+
+* New cards land on your **shelf**, like any card you add, and come into your daily study at your **New cards per day** rate
+* Indigo can stay open while the assistant works. Switch to another screen and back to see the changes
+* Everything stays on your computer. `indigo-cli` reads and writes the same local library the app uses, and your assistant only sees what it asks for
+* It uses the installed app's library by default. `--data-dir` points it at another one, e.g. a test copy
+* `indigo-cli commands` lists every command. The full reference, card format and examples are in [docs/CLI.md](docs/CLI.md), which is the same text `indigo-cli guide` prints
+
+## What's new
+
+* **`indigo-cli`** for AI assistants and scripts (see above)
+* Confirmations (delete, discard, merge, open a link…) are now dialogs inside the app instead of system popups, with buttons that say what they do
+* Pausing a card keeps what you'd typed so far
+* The code editor matches your theme in dark mode, with the same colours as the revealed answer
+* Month labels on the Stats heat map
+* Fixes: shortcuts no longer fire behind open dialogs or zoomed images, `Esc` in Vim mode doesn't pause the session, suspending a card in the editor doesn't count as an unsaved change, Library bulk actions only touch the cards you can see, and due dates use your local day instead of UTC
 
 ## Keyboard shortcuts
 
@@ -210,7 +265,7 @@ There's no AI in Indigo, but if you use one (Claude Code, ChatGPT, Codex…) it 
 * `Ctrl+Shift+Enter` save and start the next card
 * `1` `2` `3` `4` Forgot, Hard, Good, Easy
 * `Space` tick the focused checklist item
-* `Esc` pause the session, or close the card editor
+* `Esc` pause the session, or close the card editor, a dialog or a zoomed image
 
 On a Mac, use `Cmd` instead of `Ctrl`.
 
@@ -271,12 +326,13 @@ Tests:
 cargo test --workspace                            # core and backend, including the scheduling simulation
 npm run check && npm run lint && npm run test     # front end
 cargo run -p indigo-core --bin sim -- --help      # try out the scheduler from the command line
+cargo run -p indigo-cli -- guide                  # the AI assistant command line
 ```
 
 ## Tech stack
 
 * Made with [Tauri 2](https://tauri.app), so it's a small native app instead of a bundled browser
-* Rust backend, with all the real logic in its own fully tested crate (`crates/core`)
+* Rust backend, with all the real logic in its own fully tested crate (`crates/core`), shared by the app and `indigo-cli` (`crates/cli`)
 * [SQLite](https://sqlite.org) (through `rusqlite`) for storage
 * Scheduling with [FSRS](https://github.com/open-spaced-repetition/fsrs-rs) (the `fsrs` crate)
 * Sync is plain `git`, merging cards as records so git never has to merge text
