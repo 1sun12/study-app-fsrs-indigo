@@ -2,7 +2,7 @@
 	// Links are the only interactive thing in card markdown: confirm, then open in the system
 	// browser (SPEC §13). Everything else is sanitized by renderMarkdown. Fenced code is then
 	// highlighted by Shiki, which builds its output from escaped text.
-	import { confirm } from '@tauri-apps/plugin-dialog';
+	import { confirm } from '#lib/confirm.svelte';
 	import { openUrl } from '@tauri-apps/plugin-opener';
 	import { renderMarkdown } from '#lib/markdown';
 	import { toast } from '#lib/toast.svelte';
@@ -46,7 +46,9 @@
 		e.preventDefault();
 		const href = a.getAttribute('href') ?? '';
 		if (!/^https?:\/\//i.test(href)) return;
-		if (await confirm(`Open in your browser?\n\n${href}`, { title: 'Open link' })) {
+		if (
+			await confirm(`Open in your browser?\n\n${href}`, { title: 'Open link', okLabel: 'Open' })
+		) {
 			openUrl(href).catch((err) => toast.error(String(err)));
 		}
 	}

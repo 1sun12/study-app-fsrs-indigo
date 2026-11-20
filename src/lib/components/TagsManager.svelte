@@ -5,7 +5,7 @@
 	// tags and saved filters live in device-local settings (autosaved by the Settings page).
 	import { Lock, Plus, Trash2 } from '@lucide/svelte';
 	import { onMount } from 'svelte';
-	import { confirm } from '@tauri-apps/plugin-dialog';
+	import { confirm } from '#lib/confirm.svelte';
 	import { api, errorMessage, type Category, type Settings } from '#lib/api';
 	import type { CardState } from '#lib/api/types/CardState';
 	import type { Difficulty } from '#lib/api/types/Difficulty';
@@ -70,7 +70,8 @@
 		if (
 			tags.includes(to) &&
 			!(await confirm(`Merge "${from}" into "${to}"? Cards tagged "${from}" get "${to}".`, {
-				title: 'Merge tags'
+				title: 'Merge tags',
+				okLabel: 'Merge'
 			}))
 		) {
 			input.value = from;
@@ -96,6 +97,7 @@
 			n &&
 			!(await confirm(`Remove "${tag}" from ${n} card${n === 1 ? '' : 's'}? The cards stay.`, {
 				title: 'Delete tag',
+				okLabel: 'Remove',
 				kind: 'warning'
 			}))
 		)

@@ -6,6 +6,7 @@
 	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import CardModal from '#lib/components/CardModal.svelte';
+	import ConfirmDialog from '#lib/components/ConfirmDialog.svelte';
 	import KeyHelp from '#lib/components/KeyHelp.svelte';
 	import Sidebar from '#lib/components/Sidebar.svelte';
 	import { prefs } from '#lib/prefs.svelte';
@@ -39,6 +40,7 @@
 </div>
 
 <CardModal />
+<ConfirmDialog />
 <KeyHelp />
 
 <div class="toast toast-end z-[1000]">

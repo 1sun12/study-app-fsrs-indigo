@@ -4,7 +4,8 @@
 	// Categories, tags and saved filters are managed in Settings.
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { confirm, save } from '@tauri-apps/plugin-dialog';
+	import { save } from '@tauri-apps/plugin-dialog';
+	import { confirm } from '#lib/confirm.svelte';
 	import {
 		FolderOpen,
 		Pause,
@@ -145,6 +146,7 @@
 		const what = list.length === 1 ? `"${list[0].title}"` : `${list.length} cards`;
 		const ok = await confirm(`Delete ${what}? Review history is kept.`, {
 			title: 'Delete',
+			okLabel: 'Delete',
 			kind: 'warning'
 		});
 		if (ok) await bulk('Deleted', (c) => api.cardDelete(c.id), list);

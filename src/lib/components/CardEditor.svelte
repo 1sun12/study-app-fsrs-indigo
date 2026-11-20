@@ -3,7 +3,7 @@
 	// Title → Prompt → Answer → Ctrl+Enter; everything else is one click away. Warnings never
 	// block (§9.2).
 	import { goto } from '$app/navigation';
-	import { confirm } from '@tauri-apps/plugin-dialog';
+	import { confirm } from '#lib/confirm.svelte';
 	import { dndzone, type DndEvent } from 'svelte-dnd-action';
 	import { Pause, Play, Trash2, TriangleAlert, X } from '@lucide/svelte';
 	import { api, errorMessage, type Card, type CardState, type Category } from '#lib/api';
@@ -91,6 +91,7 @@
 	async function remove() {
 		const ok = await confirm('Delete this card? Its review history is kept.', {
 			title: 'Delete card',
+			okLabel: 'Delete',
 			kind: 'warning'
 		});
 		if (!ok) return;

@@ -3,7 +3,8 @@
 	// autosave; scheduling constants replay every card, so they ask first (§7.6).
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { confirm, open, save } from '@tauri-apps/plugin-dialog';
+	import { open, save } from '@tauri-apps/plugin-dialog';
+	import { confirm } from '#lib/confirm.svelte';
 	import {
 		api,
 		errorMessage,
@@ -111,7 +112,7 @@
 			.filter((n) => Number.isFinite(n) && n > 0);
 		const ok = await confirm(
 			'Saving scheduling constants recomputes every card’s due date from its review history. Continue?',
-			{ title: 'Replay all cards' }
+			{ title: 'Replay all cards', okLabel: 'Replay' }
 		);
 		if (!ok) return;
 		busy = true;
@@ -159,7 +160,7 @@
 		if (!path) return;
 		const ok = await confirm(
 			'Merge this backup into your library? Nothing here is deleted; where both have a card, the newer edit wins and the other is kept under Conflicts.',
-			{ title: 'Import backup' }
+			{ title: 'Import backup', okLabel: 'Import' }
 		);
 		if (!ok) return;
 		busy = true;
@@ -212,6 +213,7 @@
 	async function cleanup() {
 		const ok = await confirm('Delete media files no card refers to? This cannot be undone.', {
 			title: 'Clean up media',
+			okLabel: 'Delete files',
 			kind: 'warning'
 		});
 		if (!ok) return;

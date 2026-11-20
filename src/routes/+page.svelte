@@ -3,7 +3,7 @@
 	// progress at a glance. Counts come from the plan; everything else from stats_overview.
 	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { confirm } from '@tauri-apps/plugin-dialog';
+	import { confirm } from '#lib/confirm.svelte';
 	import { Zap } from '@lucide/svelte';
 	import { api, errorMessage, type Category, type SessionPlan, type StatsOverview } from '#lib/api';
 	import Bars from '#lib/components/charts/Bars.svelte';
@@ -100,7 +100,10 @@
 
 	async function discard(id: string) {
 		if (
-			!(await confirm('Discard this attempt? No review is written.', { title: 'Discard attempt' }))
+			!(await confirm('Discard this attempt? No review is written.', {
+				title: 'Discard attempt',
+				okLabel: 'Discard'
+			}))
 		)
 			return;
 		try {

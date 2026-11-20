@@ -1,5 +1,6 @@
 // Add / edit card is a foreground modal (owner rule), opened from anywhere; never a route.
 import { api, type Card, type Category } from '#lib/api';
+import { confirm } from '#lib/confirm.svelte';
 import type { Step } from '#lib/api/types/Step';
 
 export function blankStep(response: Step['response'] = 'recall'): Step {
@@ -73,9 +74,9 @@ class CardModal {
 	/** Esc, the close button or the backdrop: asks before dropping unsaved work. */
 	async requestClose(): Promise<boolean> {
 		if (this.dirty) {
-			const { confirm } = await import('@tauri-apps/plugin-dialog');
 			const ok = await confirm('Discard the changes to this card?', {
 				title: 'Discard changes',
+				okLabel: 'Discard',
 				kind: 'warning'
 			});
 			if (!ok) return false;
