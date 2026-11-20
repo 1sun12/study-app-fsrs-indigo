@@ -110,7 +110,9 @@ export const api = {
 	/** The revealed step is done; ticked checklist items are kept for Stats only. */
 	attemptStepComplete: (attemptId: string, stepId: string, checked: string[]) =>
 		invoke<AttemptView>('attempt_step_complete', { attemptId, stepId, checked }),
-	attemptPause: (attemptId: string) => invoke<AttemptView>('attempt_pause', { attemptId }),
+	/** `draft`: the typed answer on screen, restored on Resume. */
+	attemptPause: (attemptId: string, draft: string | null) =>
+		invoke<AttemptView>('attempt_pause', { attemptId, draft }),
 	attemptDiscard: (attemptId: string) => invoke<void>('attempt_discard', { attemptId }),
 	attemptRestart: (attemptId: string) => invoke<AttemptView>('attempt_restart', { attemptId }),
 	/** The user's own grade for the card: the only thing that schedules it. */

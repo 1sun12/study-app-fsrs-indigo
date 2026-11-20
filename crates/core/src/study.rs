@@ -9,7 +9,7 @@ use crate::Result;
 use crate::db::Db;
 use crate::domain::{
     Attempt, AttemptStatus, Card, CardState, Grade, Review, ReviewKind, ReviewStep, SchedMeta,
-    StepStats,
+    StepStats, StepStatus,
 };
 use crate::error::invalid;
 use crate::sched::fsrs;
@@ -136,9 +136,21 @@ pub fn step_complete(
     Ok(view(a, c))
 }
 
-pub fn pause(db: &Db, attempt_id: &str, now: DateTime<Utc>) -> Result<AttemptView> {
+/// `draft` is the typed answer on screen, kept on the unrevealed step so Resume shows it again.
+pub fn pause(
+    db: &Db,
+    attempt_id: &str,
+    draft: Option<String>,
+    now: DateTime<Utc>,
+) -> Result<AttemptView> {
     let (mut a, c) = load(db, attempt_id)?;
     session::pause(&mut a, now);
+    if let (Some(draft), Some(step)) = (
+        draft,
+        a.steps.iter_mut().find(|s| s.status == StepStatus::Pending),
+    ) {
+        step.typed_answer = Some(draft);
+    }
     db.save_attempt(&a)?;
     Ok(view(a, c))
 }

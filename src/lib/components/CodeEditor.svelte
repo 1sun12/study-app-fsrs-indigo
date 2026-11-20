@@ -7,7 +7,8 @@
 	import { EditorView, basicSetup, minimalSetup } from 'codemirror';
 	import { Compartment, EditorState } from '@codemirror/state';
 	import { keymap, placeholder as cmPlaceholder } from '@codemirror/view';
-	import { LanguageDescription, indentUnit } from '@codemirror/language';
+	import { LanguageDescription, indentUnit, syntaxHighlighting } from '@codemirror/language';
+	import { classHighlighter } from '@lezer/highlight';
 	import { languages } from '@codemirror/language-data';
 	import { vim } from '@replit/codemirror-vim';
 	import { prefs } from '#lib/prefs.svelte';
@@ -78,6 +79,8 @@
 						}
 					]),
 					prose ? [minimalSetup, EditorView.lineWrapping, cmPlaceholder(placeholder)] : basicSetup,
+					// tok-* classes, coloured in layout.css to match Shiki in both themes.
+					syntaxHighlighting(classHighlighter),
 					lang.of([]),
 					tabComp.of(tabExtension(prefs.settings?.editor.tab_width ?? 4)),
 					EditorState.readOnly.of(readonly),

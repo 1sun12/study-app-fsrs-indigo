@@ -96,8 +96,17 @@ pub fn grade_preview(state: State<'_, AppState>, card_id: String) -> CmdResult<[
 }
 
 #[tauri::command]
-pub fn attempt_pause(state: State<'_, AppState>, attempt_id: String) -> CmdResult<AttemptView> {
-    Ok(study::pause(&state.db, &attempt_id, state.clock()?.now)?)
+pub fn attempt_pause(
+    state: State<'_, AppState>,
+    attempt_id: String,
+    draft: Option<String>,
+) -> CmdResult<AttemptView> {
+    Ok(study::pause(
+        &state.db,
+        &attempt_id,
+        draft,
+        state.clock()?.now,
+    )?)
 }
 
 #[tauri::command]

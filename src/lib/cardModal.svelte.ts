@@ -71,16 +71,17 @@ class CardModal {
 	}
 
 	/** Esc, the close button or the backdrop: asks before dropping unsaved work. */
-	async requestClose() {
+	async requestClose(): Promise<boolean> {
 		if (this.dirty) {
 			const { confirm } = await import('@tauri-apps/plugin-dialog');
 			const ok = await confirm('Discard the changes to this card?', {
 				title: 'Discard changes',
 				kind: 'warning'
 			});
-			if (!ok) return;
+			if (!ok) return false;
 		}
 		this.close();
+		return true;
 	}
 
 	changed() {

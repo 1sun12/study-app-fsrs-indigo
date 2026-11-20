@@ -458,6 +458,68 @@ h2,
 	font-family: inherit;
 	line-height: 1.625;
 }
+/* The editor in app colours (CodeMirror's defaults are light-only). Token colours follow the
+   GitHub themes Shiki uses for the revealed answer. */
+:root {
+	--tok-keyword: #cf222e;
+	--tok-string: #0a3069;
+	--tok-comment: #6e7781;
+	--tok-number: #0550ae;
+	--tok-function: #8250df;
+	--tok-type: #953800;
+}
+:root[data-theme='indigo-dark'] {
+	--tok-keyword: #ff7b72;
+	--tok-string: #a5d6ff;
+	--tok-comment: #8b949e;
+	--tok-number: #79c0ff;
+	--tok-function: #d2a8ff;
+	--tok-type: #ffa657;
+}
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme]) {
+		--tok-keyword: #ff7b72;
+		--tok-string: #a5d6ff;
+		--tok-comment: #8b949e;
+		--tok-number: #79c0ff;
+		--tok-function: #d2a8ff;
+		--tok-type: #ffa657;
+	}
+}
+.cm-host .cm-gutters {
+	background: transparent;
+	border-right: 1px solid var(--color-base-300);
+	color: color-mix(in oklab, var(--color-base-content) 45%, transparent);
+}
+.cm-host :is(.cm-activeLine, .cm-activeLineGutter) {
+	background: color-mix(in oklab, var(--color-base-content) 6%, transparent);
+}
+.cm-host .cm-cursor {
+	border-left-color: var(--color-base-content);
+}
+.cm-host .cm-selectionBackground,
+.cm-host .cm-focused .cm-selectionBackground {
+	background: color-mix(in oklab, var(--color-primary) 30%, transparent) !important;
+}
+.cm-host :is(.tok-keyword, .tok-meta, .tok-operator, .tok-modifier) {
+	color: var(--tok-keyword);
+}
+.cm-host :is(.tok-string, .tok-string2, .tok-regexp) {
+	color: var(--tok-string);
+}
+.cm-host .tok-comment {
+	color: var(--tok-comment);
+	font-style: italic;
+}
+.cm-host :is(.tok-number, .tok-bool, .tok-atom, .tok-literal) {
+	color: var(--tok-number);
+}
+.cm-host :is(.tok-variableName.tok-definition, .tok-propertyName.tok-definition, .tok-macroName) {
+	color: var(--tok-function);
+}
+.cm-host :is(.tok-typeName, .tok-className, .tok-namespace) {
+	color: var(--tok-type);
+}
 .cm-host .cm-editor.cm-focused {
 	outline: 2px solid color-mix(in oklab, currentColor 30%, transparent);
 }

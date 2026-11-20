@@ -1,7 +1,7 @@
 <script lang="ts">
 	// Today (SPEC §14, 0.2 dashboard): one primary action (Study), Cram as the secondary, then
 	// progress at a glance. Counts come from the plan; everything else from stats_overview.
-	import { onMount } from 'svelte';
+	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { confirm } from '@tauri-apps/plugin-dialog';
 	import { Zap } from '@lucide/svelte';
@@ -40,9 +40,10 @@
 			loading = false;
 		}
 	}
-	onMount(load);
+	// On open, and again after every save or delete in the card editor.
 	$effect(() => {
-		if (cardModal.version) load();
+		void cardModal.version;
+		untrack(load);
 	});
 
 	const counts = $derived.by(() => {
@@ -91,7 +92,7 @@
 				const j = Math.floor(Math.random() * (i + 1));
 				[ids[i], ids[j]] = [ids[j], ids[i]];
 			}
-			await session.cramCards(ids.slice(0, Math.max(1, cramCount)));
+			await session.cramCards(ids.slice(0, Math.max(1, cramCount || 1)));
 		} catch (e) {
 			toast.error(errorMessage(e));
 		}
@@ -124,6 +125,7 @@
 	<section class="panel flex flex-wrap items-center gap-6 p-6">
 		<div
 			class="radial-progress shrink-0 bg-base-200 text-primary"
+			class:after:hidden={progress === 0}
 			style:--value={Math.round(progress * 100)}
 			style:--size="5.5rem"
 			style:--thickness="0.5rem"

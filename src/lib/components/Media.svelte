@@ -17,9 +17,11 @@
 
 	$effect(() => {
 		let live = true;
-		mediaBase().then((b) => {
-			if (live) url = mediaUrl(b, media);
-		});
+		mediaBase()
+			.then((b) => {
+				if (live) url = mediaUrl(b, media);
+			})
+			.catch(() => {}); // nothing to show; the next render asks again
 		return () => {
 			live = false;
 		};

@@ -16,7 +16,7 @@
 	} from '#lib/api';
 	import { Pencil } from '@lucide/svelte';
 	import { cardModal } from '#lib/cardModal.svelte';
-	import { confirm } from '@tauri-apps/plugin-dialog';
+	import { prefs } from '#lib/prefs.svelte';
 	import type { PlanItem } from '#lib/api/types/PlanItem';
 	import type { Step } from '#lib/api/types/Step';
 	import CodeEditor from '#lib/components/CodeEditor.svelte';
@@ -234,11 +234,9 @@
 				if (v.card.steps.map((s) => s.id).join() === stepsBefore) {
 					view = v;
 					step = v.card.steps.find((s) => s.id === step?.id) ?? step;
-				} else if (
-					await confirm('This card’s steps changed, so this attempt starts over.', {
-						title: 'Restart attempt'
-					})
-				) {
+				} else {
+					// The old attempt points at steps that no longer exist, so it cannot go on.
+					toast.info('This card’s steps changed, so this attempt starts over.');
 					await loadAttempt(await api.attemptRestart(view.attempt.id));
 				}
 			}
@@ -263,7 +261,10 @@
 	async function pause() {
 		if (view && phase !== 'summary' && phase !== 'done') {
 			try {
-				await api.attemptPause(view.attempt.id);
+				await api.attemptPause(
+					view.attempt.id,
+					phase === 'prompt' && step?.response === 'typed' ? typed : null
+				);
 			} catch (e) {
 				toast.error(errorMessage(e));
 			}
@@ -285,15 +286,18 @@
 	}
 
 	function onkeydown(e: KeyboardEvent) {
-		if (cardModal.card) return; // the card editor is open and owns the keyboard
+		// The card editor, a confirm, the key map or the image zoom owns the keyboard.
+		if (document.querySelector('dialog.modal-open, dialog[open]')) return;
+		const inField = (e.target as HTMLElement | null)?.closest(
+			'.cm-editor, input:not([type="checkbox"]), textarea, [contenteditable]'
+		);
 		if (e.key === 'Escape') {
+			// With Vim on, Esc in an editor means "normal mode", not "pause".
+			if (prefs.settings?.editor.vim && inField?.closest('.cm-editor')) return;
 			e.preventDefault();
 			pause();
 			return;
 		}
-		const inField = (e.target as HTMLElement | null)?.closest(
-			'.cm-editor, input:not([type="checkbox"]), textarea, [contenteditable]'
-		);
 		if (inField) return;
 		if (phase === 'reveal' && lastStep) {
 			const g = GRADES.find((x) => x.key === e.key);

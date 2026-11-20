@@ -46,22 +46,24 @@
 		if (HASHES[page.url.hash]) section = HASHES[page.url.hash];
 	});
 
-	onMount(async () => {
-		try {
-			[settings, sched] = await Promise.all([api.settingsGet(), api.schedConfigGet()]);
-			capsText = sched.streak_caps.join(', ');
-			// f32 from the backend (0.8999…) vs the slider's 0.01 steps: compare on the slider's terms.
-			sched.desired_retention = Math.round(sched.desired_retention * 100) / 100;
-			savedSched = JSON.stringify(sched);
-			conflicts = await api.conflictsList();
-		} catch (e) {
-			toast.error(errorMessage(e));
-		}
-	});
-
 	// Autosave: any change to `settings` is written after a short pause.
 	let saveTimer: ReturnType<typeof setTimeout> | undefined;
 	let lastSaved = '';
+
+	/** On open, and after a backup import that may have brought settings or scheduling. */
+	async function load() {
+		const [s, c] = await Promise.all([api.settingsGet(), api.schedConfigGet()]);
+		lastSaved = ''; // the autosave effect takes the loaded settings as its baseline
+		settings = s;
+		capsText = c.streak_caps.join(', ');
+		// f32 from the backend (0.8999…) vs the slider's 0.01 steps: compare on the slider's terms.
+		c.desired_retention = Math.round(c.desired_retention * 100) / 100;
+		sched = c;
+		savedSched = JSON.stringify(c);
+		conflicts = await api.conflictsList();
+	}
+
+	onMount(() => load().catch((e) => toast.error(errorMessage(e))));
 	$effect(() => {
 		if (!settings) return;
 		const json = JSON.stringify(settings);
@@ -166,7 +168,7 @@
 			toast.info(`Imported ${plural(r.cards, 'card')} and ${plural(r.reviews, 'review')}`);
 			for (const s of r.skipped.slice(0, 3)) toast.warning(`Skipped: ${s}`);
 			if (r.skipped.length > 3) toast.warning(`…and ${r.skipped.length - 3} more skipped`);
-			[settings, sched] = await Promise.all([api.settingsGet(), api.schedConfigGet()]);
+			await Promise.all([load(), prefs.load()]);
 		} catch (e) {
 			toast.error(errorMessage(e));
 		} finally {
@@ -213,6 +215,7 @@
 			kind: 'warning'
 		});
 		if (!ok) return;
+		busy = true;
 		try {
 			const r = await api.mediaCleanup();
 			toast.info(
@@ -220,6 +223,8 @@
 			);
 		} catch (e) {
 			toast.error(errorMessage(e));
+		} finally {
+			busy = false;
 		}
 	}
 </script>
@@ -417,9 +422,13 @@
 							class="btn btn-sm"
 							disabled={!settings.sync.repo_url.trim() || syncStore.view?.syncing}
 							onclick={async () => {
-								await prefs.save($state.snapshot(settings) as Settings);
-								await syncStore.init();
-								syncStore.now();
+								try {
+									await prefs.save($state.snapshot(settings) as Settings);
+									await syncStore.init();
+									syncStore.now();
+								} catch (e) {
+									toast.error(errorMessage(e));
+								}
 							}}>Sync now</button
 						>
 					</div>
@@ -483,7 +492,9 @@
 						deletes. Packs share cards without history; export one from the Library.
 					</p>
 					<div>
-						<button type="button" class="btn btn-sm" onclick={cleanup}>Clean up media</button>
+						<button type="button" class="btn btn-sm" disabled={busy} onclick={cleanup}
+							>Clean up media</button
+						>
 						<span class="hint ml-2">removes files no card refers to; never runs on its own</span>
 					</div>
 				{:else}

@@ -41,5 +41,10 @@ pub fn next_memory(
 
 /// Probability of recall after `elapsed_days`; drives the simulated learner.
 pub fn retrievability(state: MemoryState, elapsed_days: u32) -> f32 {
-    FSRS::default().current_retrievability(state, elapsed_days as f32)
+    retrievability_at(state, elapsed_days as f32)
+}
+
+/// Same, for fractional days (the library's raw intervals).
+pub fn retrievability_at(state: MemoryState, elapsed_days: f32) -> f32 {
+    FSRS::default().current_retrievability(state, elapsed_days)
 }

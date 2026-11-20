@@ -4,8 +4,11 @@ let basePromise: Promise<string> | null = null;
 
 /** Cached for the process; the server's port and token change every launch. */
 export function mediaBase(): Promise<string> {
-	const p = basePromise ?? (basePromise = api.mediaBaseUrl());
-	return p;
+	basePromise ??= api.mediaBaseUrl().catch((e) => {
+		basePromise = null; // a failed ask is retried next time instead of cached
+		throw e;
+	});
+	return basePromise;
 }
 
 export function mediaUrl(base: string, ref: { hash: string; ext: string }): string {

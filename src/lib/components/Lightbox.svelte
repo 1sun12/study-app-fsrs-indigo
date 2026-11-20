@@ -6,6 +6,8 @@
 	}: { url: string | null; caption: string | null; onclose: () => void } = $props();
 </script>
 
+<svelte:window onkeydown={(e) => url && e.key === 'Escape' && onclose()} />
+
 {#if url}
 	<dialog class="modal modal-open" {onclose}>
 		<div class="modal-box max-w-5xl p-2">

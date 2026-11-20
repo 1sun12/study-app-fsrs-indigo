@@ -132,7 +132,7 @@
 					<button
 						type="button"
 						class="btn btn-ghost btn-xs"
-						title="Grade with yes/no checks instead of the four buttons"
+						title="Things to check after the reveal; reminders only, you still grade the card"
 						onclick={() => {
 							checklist = true;
 							if (step.criteria.length === 0) step.criteria = [{ id: '', text: '', weight: 1 }];

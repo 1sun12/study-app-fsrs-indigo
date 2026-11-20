@@ -42,6 +42,7 @@
 	let anchor = $state<number | null>(null);
 	let loading = $state(true);
 	let busy = $state(false);
+	let rollover = $state(4);
 
 	const visible = $derived(
 		cards.filter(
@@ -86,7 +87,13 @@
 	async function loadCategories() {
 		categories = await api.categoriesList().catch(() => categories);
 	}
-	onMount(loadCategories);
+	onMount(() => {
+		loadCategories();
+		api
+			.schedConfigGet()
+			.then((c) => (rollover = c.rollover_hour))
+			.catch(() => {});
+	});
 	$effect(() => {
 		void [text, status, categoryId, cardModal.version];
 		const t = setTimeout(load, 150);
@@ -152,7 +159,11 @@
 		if (!path) return;
 		const name = (path.split(/[\\/]/).pop() ?? 'Pack').replace(/\.indigopack$/, '');
 		try {
-			const n = await api.packExport(path, [...selected], name);
+			const n = await api.packExport(
+				path,
+				chosen.map((c) => c.id),
+				name
+			);
 			toast.info(`Exported ${n} card${n === 1 ? '' : 's'} to ${name}`);
 		} catch (e) {
 			toast.error(errorMessage(e));
@@ -166,7 +177,8 @@
 	function due(c: CardSummary): string {
 		if (c.state !== 'active') return c.state;
 		if (!c.due_day) return 'new';
-		const today = new Date().toISOString().slice(0, 10);
+		// The local study day (rollover hour), not the UTC date.
+		const today = new Date(Date.now() - rollover * 3_600_000).toLocaleDateString('sv-SE');
 		return c.due_day <= today ? 'due' : `due ${c.due_day}`;
 	}
 </script>
@@ -244,7 +256,7 @@
 		{/if}
 	</div>
 
-	{#if selected.size > 0}
+	{#if chosen.length > 0}
 		<!-- Floating, so selecting never shifts the rows you are about to shift-click. -->
 		<div class="pointer-events-none fixed inset-x-0 bottom-6 z-30 flex justify-center pr-6 pl-22">
 			<div
@@ -252,12 +264,12 @@
 				role="toolbar"
 				aria-label="Selected cards"
 			>
-				<span class="mr-2 font-medium">{selected.size} selected</span>
+				<span class="mr-2 font-medium">{chosen.length} selected</span>
 				<button
 					type="button"
 					class="btn gap-1 btn-ghost btn-xs"
 					disabled={busy}
-					onclick={() => cram([...selected])}><Zap class="size-3.5" />Cram</button
+					onclick={() => cram(chosen.map((c) => c.id))}><Zap class="size-3.5" />Cram</button
 				>
 				<button
 					type="button"

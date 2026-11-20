@@ -131,3 +131,50 @@ fn grade_ordering_is_monotone() {
         );
     }
 }
+
+/// The wrapper must not distort the library's interval solve: at the raw interval FSRS
+/// returns, its own forgetting curve gives exactly the desired retention, for every grade
+/// and retention, along a real history (new card, lapse, recovery, overdue).
+#[test]
+fn raw_interval_hits_desired_retention() {
+    use indigo_core::sched::fsrs::{memory_of, retrievability_at};
+    let mut checked = 0;
+    for retention in [0.70, 0.90, 0.95, 0.99] {
+        let cfg = SchedConfig {
+            desired_retention: retention,
+            ..SchedConfig::default()
+        };
+        let noon = |d: NaiveDate| d.and_hms_opt(12, 0, 0).unwrap().and_utc();
+        let mut day = NaiveDate::from_ymd_opt(2026, 1, 1).unwrap();
+        let mut prev = None;
+        for (step, carry) in [
+            Grade::Good,
+            Grade::Good,
+            Grade::Again,
+            Grade::Good,
+            Grade::Easy,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            for g in Grade::ALL {
+                let out = next_sched(prev.as_ref(), "m", g, noon(day), 0, &cfg).unwrap();
+                if out.raw_interval < 1.0 {
+                    continue; // sub-day: the 1-day floor applies, nothing to compare
+                }
+                let r = retrievability_at(memory_of(&out.sched), out.raw_interval);
+                assert!(
+                    (r - retention).abs() < 1e-3,
+                    "retention {retention}, step {step}, {g:?}: R({}) = {r}",
+                    out.raw_interval
+                );
+                checked += 1;
+            }
+            let out = next_sched(prev.as_ref(), "m", carry, noon(day), 0, &cfg).unwrap();
+            // Review twice as late as due, to cover elapsed > interval.
+            day = day + chrono::Days::new(u64::from(out.sched.interval_days) * 2);
+            prev = Some(out.sched);
+        }
+    }
+    assert!(checked >= 30, "only {checked} intervals compared");
+}

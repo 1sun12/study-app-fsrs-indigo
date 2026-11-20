@@ -194,7 +194,13 @@ fn kickoff_prompt_3_scenario() {
     )
     .unwrap();
     study::step_show(&db, &a, &s(1), day1 + chrono::TimeDelta::seconds(100)).unwrap();
-    study::pause(&db, &a, day1 + chrono::TimeDelta::seconds(160)).unwrap();
+    study::pause(
+        &db,
+        &a,
+        Some("half an answer".into()),
+        day1 + chrono::TimeDelta::seconds(160),
+    )
+    .unwrap();
     drop(db);
 
     // "Quit and relaunch": reopen the database.
@@ -211,6 +217,11 @@ fn kickoff_prompt_3_scenario() {
     assert_eq!(v.attempt.steps[0].elapsed_ms, 90_000);
     assert_eq!(v.attempt.steps[1].elapsed_ms, 60_000, "paused time banked");
     assert_eq!(v.attempt.steps[1].status, StepStatus::Pending);
+    assert_eq!(
+        v.attempt.steps[1].typed_answer.as_deref(),
+        Some("half an answer"),
+        "the draft on screen survives Pause"
+    );
     assert_eq!(
         study::start(&db, &blender_card.id, day1, DEV)
             .unwrap()

@@ -4,9 +4,10 @@
 
 	const rows = [
 		['?', 'This help'],
-		['Esc', 'Pause the session (Study)'],
-		['Enter', 'Reveal (tool / recall steps), Next on the summary'],
+		['Esc', 'Pause the session (Study); close a dialog'],
+		['Enter', 'Reveal a recall step, Next step, Next on the summary'],
 		['Ctrl + Enter', 'Submit a typed answer; save a card in the editor'],
+		['Ctrl + Shift + Enter', 'Add the card and start the next one (editor)'],
 		['1 · 2 · 3 · 4', 'Forgot · Hard · Good · Easy (only while the reference is shown)'],
 		['Space', 'Toggle the focused criterion']
 	];

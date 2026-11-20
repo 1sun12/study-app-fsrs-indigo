@@ -64,10 +64,12 @@
 			steps: snap.steps.map((s) => ({ ...s, id: s.id.startsWith('tmp-') ? '' : s.id }))
 		};
 	}
-	const pristine = JSON.stringify(payload());
+	// Suspend/Resume save on the spot, so the state is not an unsaved change.
+	const edits = () => JSON.stringify({ ...payload(), state: null });
+	const pristine = edits();
 	let dirty = $state(false);
 	$effect(() => {
-		dirty = JSON.stringify(payload()) !== pristine;
+		dirty = edits() !== pristine;
 		cardModal.dirty = dirty;
 	});
 
@@ -165,9 +167,8 @@
 					<button
 						type="button"
 						class="btn gap-1 btn-ghost btn-sm"
-						onclick={() => {
-							cardModal.close();
-							goto(`/study?card=${card.id}`);
+						onclick={async () => {
+							if (await cardModal.requestClose()) goto(`/study?card=${card.id}`);
 						}}><Play class="size-4" />Study now</button
 					>
 				{:else if card.state === 'active'}
