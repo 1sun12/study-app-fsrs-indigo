@@ -77,8 +77,10 @@ say "Building Indigo (this takes a few minutes the first time)"
 	cd "$REPO"
 	npm ci --no-audit --no-fund
 	npm run tauri build -- --no-bundle
+	cargo build --release -p indigo-cli
 )
 [ -x "$REPO/target/release/indigo" ] || die "build finished without target/release/indigo"
+[ -x "$REPO/target/release/indigo-cli" ] || die "build finished without target/release/indigo-cli"
 
 SHORTCUT=0
 if [ "$ASSUME_YES" -eq 0 ] && confirm "Add an Indigo shortcut to your Desktop?"; then

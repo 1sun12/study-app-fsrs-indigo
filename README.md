@@ -193,6 +193,15 @@ cd indigo
 * Select cards in the Library and click **Export** to make an `.indigopack` you can send to anyone. It has the cards and their media, but none of your history
 * **Import pack** in **Settings → Data** adds a pack's cards to your library
 
+### Letting an AI assistant make cards (indigo-cli)
+
+There's no AI in Indigo, but if you use one (Claude Code, ChatGPT, Codex…) it can drive your library through `indigo-cli`, a small command line that comes with Indigo. Ask your assistant to run `indigo-cli guide` first, then say something like *"make 20 Python cards on the fundamentals"*.
+
+* It can add, edit, tag and organise cards, manage categories, read your stats, and change settings
+* It can't delete cards, sync, or study and grade for you. Those stay with you, in the app
+* New cards land on your shelf like any card you add, and sync the next time the app does
+* The install script puts it next to `indigo`; the releases page has it for Mac, Windows and Linux. Full guide: [docs/CLI.md](docs/CLI.md)
+
 ## Keyboard shortcuts
 
 * `?` show all of these in the app

@@ -1,8 +1,27 @@
 //! "Day" = local calendar date after shifting by the rollover hour (SPEC §7.4).
 
-use chrono::{DateTime, Days, NaiveDate, TimeDelta, Utc};
+use chrono::{DateTime, Days, Local, NaiveDate, Offset, TimeDelta, Utc};
 
 use crate::domain::CardSched;
+
+/// The device's present moment: UTC time, its local UTC offset, and the study day it falls in.
+pub struct Clock {
+    pub now: DateTime<Utc>,
+    pub tz_offset_min: i32,
+    pub today: NaiveDate,
+}
+
+impl Clock {
+    pub fn now(rollover_hour: u32) -> Clock {
+        let now = Utc::now();
+        let tz_offset_min = Local::now().offset().fix().local_minus_utc() / 60;
+        Clock {
+            now,
+            tz_offset_min,
+            today: local_day(now, tz_offset_min, rollover_hour),
+        }
+    }
+}
 
 pub fn local_day(ts_utc: DateTime<Utc>, tz_offset_min: i32, rollover_hour: u32) -> NaiveDate {
     (ts_utc + TimeDelta::minutes(i64::from(tz_offset_min))

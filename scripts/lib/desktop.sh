@@ -30,6 +30,7 @@ desktop_dir() {
 install_desktop() {
 	local repo="$1" shortcut="$2" size apps entry
 	install_file 755 "$repo/target/release/indigo" "$PREFIX/bin/indigo"
+	install_file 755 "$repo/target/release/indigo-cli" "$PREFIX/bin/indigo-cli"
 	for size in $ICON_SIZES; do
 		install_file 644 "$repo/src-tauri/icons/$(icon_source "$size")" \
 			"$PREFIX/share/icons/hicolor/$size/apps/indigo.png"

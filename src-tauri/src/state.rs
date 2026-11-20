@@ -3,9 +3,8 @@
 use std::path::PathBuf;
 use std::sync::atomic::AtomicBool;
 
-use chrono::{DateTime, Local, NaiveDate, Offset, Utc};
 use indigo_core::db::Db;
-use indigo_core::sched::day::local_day;
+use indigo_core::sched::day::Clock;
 
 use crate::error::CmdResult;
 
@@ -20,22 +19,9 @@ pub struct AppState {
     pub quitting: AtomicBool,
 }
 
-pub struct Clock {
-    pub now: DateTime<Utc>,
-    pub tz_offset_min: i32,
-    pub today: NaiveDate,
-}
-
 impl AppState {
     /// `now` plus the device's current UTC offset and the study day it falls in.
     pub fn clock(&self) -> CmdResult<Clock> {
-        let now = Utc::now();
-        let tz_offset_min = Local::now().offset().fix().local_minus_utc() / 60;
-        let rollover = self.db.sched_config()?.rollover_hour;
-        Ok(Clock {
-            now,
-            tz_offset_min,
-            today: local_day(now, tz_offset_min, rollover),
-        })
+        Ok(Clock::now(self.db.sched_config()?.rollover_hour))
     }
 }

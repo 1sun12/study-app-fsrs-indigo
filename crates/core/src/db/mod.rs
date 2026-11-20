@@ -33,6 +33,8 @@ impl Db {
         }
         let mut conn = Connection::open(path)?;
         conn.pragma_update(None, "journal_mode", "WAL")?;
+        // The app and `indigo-cli` may write at the same moment: wait instead of failing.
+        conn.busy_timeout(std::time::Duration::from_secs(5))?;
         conn.pragma_update(None, "foreign_keys", "ON")?;
         let version: i64 = conn.query_row("PRAGMA user_version", [], |r| r.get(0))?;
         if existed && version < migrations::COUNT as i64 {

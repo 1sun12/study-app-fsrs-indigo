@@ -2224,6 +2224,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "indigo-cli"
+version = "0.3.0"
+dependencies = [
+ "chrono",
+ "clap",
+ "dirs",
+ "indigo-core",
+ "serde",
+ "serde_json",
+ "tempfile",
+]
+
+[[package]]
 name = "indigo-core"
 version = "0.3.0"
 dependencies = [
