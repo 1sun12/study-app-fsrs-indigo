@@ -23,7 +23,7 @@ jobs:
     container: ${{ matrix.image }}
     env:
       # Containers run as root with HOME=/github/home, which rustup-init otherwise refuses.
-      RUSTUP_INIT_SKIP_SUDO_CHECK: "yes"
+      RUSTUP_INIT_SKIP_SUDO_CHECK: 'yes'
     steps:
       - name: Bootstrap (bash, tar for checkout)
         shell: sh
