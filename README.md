@@ -292,7 +292,7 @@ On a Mac, use `Cmd` instead of `Ctrl`.
 
 **Is there AI in it?**
 
-* No. You make the cards and you grade them. That's the whole point
+* No, but there is a command line, `indigo-cli`, that AI assistants and harnesses can talk to. It lets them write and organise cards for you, while grading always stays with you. See [Using Indigo with an AI assistant](#using-indigo-with-an-ai-assistant-indigo-cli)
 
 **Why does "Good" sometimes bring a card back in 3 days and sometimes in 2 months?**
 
