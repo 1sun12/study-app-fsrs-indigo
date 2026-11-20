@@ -21,6 +21,9 @@ jobs:
           - ghcr.io/void-linux/void-glibc-full:latest
     runs-on: ubuntu-24.04
     container: ${{ matrix.image }}
+    env:
+      # Containers run as root with HOME=/github/home, which rustup-init otherwise refuses.
+      RUSTUP_INIT_SKIP_SUDO_CHECK: "yes"
     steps:
       - name: Bootstrap (bash, tar for checkout)
         shell: sh
