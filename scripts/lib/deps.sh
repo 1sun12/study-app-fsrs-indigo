@@ -138,7 +138,7 @@ ensure_node() {
 	[ "$arch" = amd64 ] && arch=x64
 	tmp="$(mktemp -d)"
 	# index.tab: first row whose "lts" column is not "-" is the newest LTS.
-	version="$(curl -fsSL https://nodejs.org/dist/index.tab | awk -F'\t' 'NR > 1 && $10 != "-" { print $1; exit }')"
+	version="$(curl -fsSL https://nodejs.org/dist/index.tab | awk -F'\t' 'NR > 1 && $10 != "-" && !v { v = $1 } END { print v }')"
 	[ -n "$version" ] || die "could not find the current Node LTS"
 	tarball="node-$version-linux-$arch.tar.xz"
 	say "Installing Node $version for the build (private copy)"
