@@ -1,0 +1,80 @@
+name: Release
+
+# Pushing a v* tag builds Mac, Windows and Linux and attaches them to a draft GitHub Release.
+# Tests run in ci.yml on every push, so this only builds.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  # One draft release made up front, so every platform uploads into the same one.
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      id: ${{ steps.create.outputs.result }}
+    steps:
+      - id: create
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = context.ref.replace("refs/tags/", "");
+            const { data } = await github.rest.repos.createRelease({
+              ...context.repo, tag_name: tag, name: `Indigo ${tag}`, draft: true,
+            });
+            return data.id;
+
+  build:
+    needs: release
+    # Also runs from workflow_dispatch, where the release job is skipped (build only, no upload).
+    if: ${{ !failure() && !cancelled() }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, ubuntu-22.04, windows-latest]
+    runs-on: ${{ matrix.platform }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - uses: swatinem/rust-cache@v2
+
+      - name: Linux system libraries
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev libxdo-dev libssl-dev patchelf
+
+      - run: npm ci
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: ${{ matrix.platform == 'macos-latest' && '--target universal-apple-darwin' || '' }}
+          releaseId: ${{ needs.release.outputs.id }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: indigo-${{ matrix.platform }}
+          path: |
+            target/**/release/bundle/dmg/*.dmg
+            target/**/release/bundle/appimage/*.AppImage
+            target/**/release/bundle/deb/*.deb
+            target/**/release/bundle/rpm/*.rpm
+            target/**/release/bundle/nsis/*.exe
+            target/**/release/bundle/msi/*.msi
+          if-no-files-found: error

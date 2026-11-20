@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="196" viewBox="0 0 660 196" role="img" aria-label="Indigo">
+  <style>
+    text { font: 17px ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace; white-space: pre; fill: #6f66e0; }
+    .sub { font: 500 13px ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: 0.32em; fill: #7d78a3; }
+  </style>
+  <g text-anchor="middle">
+    <text x="330" y="39">██╗███╗   ██╗██████╗ ██╗ ██████╗  ██████╗ </text>
+    <text x="330" y="58">██║████╗  ██║██╔══██╗██║██╔════╝ ██╔═══██╗</text>
+    <text x="330" y="77">██║██╔██╗ ██║██║  ██║██║██║  ███╗██║   ██║</text>
+    <text x="330" y="96">██║██║╚██╗██║██║  ██║██║██║   ██║██║   ██║</text>
+    <text x="330" y="115">██║██║ ╚████║██████╔╝██║╚██████╔╝╚██████╔╝</text>
+    <text x="330" y="134">╚═╝╚═╝  ╚═══╝╚═════╝ ╚═╝ ╚═════╝  ╚═════╝ </text>
+  </g>
+  <line x1="24" x2="636" y1="166" y2="166" stroke="#7d78a3" stroke-opacity=".45" stroke-width="1.5"/>
+  <circle cx="60" cy="166" r="4" fill="#6f66e0"/>
+  <circle cx="76" cy="166" r="4" fill="#6f66e0"/>
+  <circle cx="108" cy="166" r="4" fill="#6f66e0"/>
+  <circle cx="172" cy="166" r="4" fill="#6f66e0"/>
+  <circle cx="300" cy="166" r="4" fill="#6f66e0"/>
+  <circle cx="556" cy="166" r="4" fill="#6f66e0"/>
+  <text class="sub" x="330" y="188" text-anchor="middle">REMEMBER WHAT YOU LEARN</text>
+</svg>
