@@ -22,9 +22,12 @@ It's a flash card app at heart, but built around actually doing the thing instea
 * Scheduling is done by [FSRS](https://github.com/open-spaced-repetition/fsrs4anki/wiki/The-Algorithm), the same algorithm Anki uses, so cards come back right before you'd forget them
 * Code is syntax highlighted for ~80 languages
 * It works offline, and syncs between your computers through a private GitHub repo you own
-* If you use an AI assistant (Claude Code, ChatGPT, Codex…), it can write and organise cards for you through `indigo-cli`, without any AI living inside the app. See [Using Indigo with an AI assistant](#using-indigo-with-an-ai-assistant-indigo-cli)
 
 If you've enjoyed using this tool, please star this repo!
+
+## New: indigo-cli, for AI assistants
+
+Indigo now comes with `indigo-cli`, a small command line that AI assistants and harnesses (Claude Code, ChatGPT, Codex…) can talk to. Point your assistant at `indigo-cli guide` and ask for *"20 Python cards on the fundamentals"*. It writes and organises the cards, but it can't delete them, sync, or grade for you. There's still no AI inside the app. More in [Using Indigo with an AI assistant](#using-indigo-with-an-ai-assistant-indigo-cli).
 
 ## Download
 
@@ -247,15 +250,6 @@ The "can't" column is on purpose:
 * Everything stays on your computer. `indigo-cli` reads and writes the same local library the app uses, and your assistant only sees what it asks for
 * It uses the installed app's library by default. `--data-dir` points it at another one, e.g. a test copy
 * `indigo-cli commands` lists every command. The full reference, card format and examples are in [docs/CLI.md](docs/CLI.md), which is the same text `indigo-cli guide` prints
-
-## What's new
-
-* **`indigo-cli`** for AI assistants and scripts (see above)
-* Confirmations (delete, discard, merge, open a link…) are now dialogs inside the app instead of system popups, with buttons that say what they do
-* Pausing a card keeps what you'd typed so far
-* The code editor matches your theme in dark mode, with the same colours as the revealed answer
-* Month labels on the Stats heat map
-* Fixes: shortcuts no longer fire behind open dialogs or zoomed images, `Esc` in Vim mode doesn't pause the session, suspending a card in the editor doesn't count as an unsaved change, Library bulk actions only touch the cards you can see, and due dates use your local day instead of UTC
 
 ## Keyboard shortcuts
 
