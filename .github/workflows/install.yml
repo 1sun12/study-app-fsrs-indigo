@@ -1,0 +1,60 @@
+name: Installer
+
+# SPEC §17: install from a clean container per supported distro, check the desktop
+# integration by file assertions, run the binary, uninstall, and check nothing is left.
+on:
+  push:
+    branches: [main]
+    paths: ['install.sh', 'uninstall.sh', 'scripts/**', '.github/workflows/install.yml']
+  workflow_dispatch:
+
+jobs:
+  install:
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - ubuntu:24.04
+          - debian:13
+          - archlinux:latest
+          - fedora:43
+          - ghcr.io/void-linux/void-glibc-full:latest
+    runs-on: ubuntu-24.04
+    container: ${{ matrix.image }}
+    steps:
+      - name: Bootstrap (bash, tar for checkout)
+        shell: sh
+        run: |
+          if command -v apt-get >/dev/null; then apt-get update && apt-get install -y bash tar ca-certificates;
+          elif command -v pacman >/dev/null; then pacman -Sy --noconfirm --needed bash tar;
+          elif command -v dnf >/dev/null; then dnf install -y bash tar;
+          elif command -v xbps-install >/dev/null; then xbps-install -Syu xbps && xbps-install -y bash tar; fi
+      - uses: actions/checkout@v4
+
+      - name: Install
+        shell: bash
+        run: ./install.sh --yes --no-sync
+
+      - name: Desktop integration and binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -x "$HOME/.local/bin/indigo"
+          test -f "$HOME/.local/share/applications/indigo.desktop"
+          for s in 32x32 64x64 128x128 256x256; do test -f "$HOME/.local/share/icons/hicolor/$s/apps/indigo.png"; done
+          grep -q "^Exec=$HOME/.local/bin/indigo" "$HOME/.local/share/applications/indigo.desktop"
+          "$HOME/.local/bin/indigo" --sync-state --data-dir "$(mktemp -d)" | grep -q '"configured":false'
+          cp "$HOME/.local/share/indigo-install/manifest" /tmp/manifest
+
+      - name: Re-run is an update
+        shell: bash
+        run: ./install.sh --yes --no-sync --skip-deps
+
+      - name: Uninstall leaves no manifest path
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./uninstall.sh --yes --keep-data
+          while read -r kind path _; do
+            case "$kind" in file|dir) if [ -e "$path" ]; then echo "left behind: $path"; exit 1; fi ;; esac
+          done < /tmp/manifest

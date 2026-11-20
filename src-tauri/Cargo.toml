@@ -1,0 +1,36 @@
+[package]
+name = "indigo"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "Indigo: spaced-repetition trainer for skills practised in real tools"
+
+[lib]
+name = "indigo_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.7", features = [] }
+
+[dependencies]
+indigo-core = { path = "../crates/core" }
+tauri = { version = "2.12", features = [] }
+tauri-plugin-log = "2"
+log = "0.4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# Loopback media server (docs/DECISIONS.md, spike a): asset:// cannot feed GStreamer on Linux.
+axum = "0.8.9"
+tower-http = { version = "0.7.1", features = ["fs"] }
+tokio = { version = "1.54.1", features = ["net"] }
+uuid = { version = "1.29.2", features = ["v4"] }
+tauri-plugin-dialog = "2.8.4"
+tauri-plugin-single-instance = "2.5.5"
+chrono = "0.4.45"
+tauri-plugin-opener = "2.7.3"
+arboard = { version = "3.7.0", default-features = false, features = ["image-data"] }
+gethostname = "1.1.0"
+
+[dev-dependencies]
+tempfile = "3.27.0"

@@ -1,0 +1,11 @@
+---
+source: crates/core/tests/ladders.rs
+expression: format_table(&rows)
+---
+step | grade | elapsed | stability | difficulty | raw_interval | interval | due
+   1 | good  |       0 |      3.92 |       3.53 |         4.78 |        5 | 2026-01-06
+   2 | good  |      30 |     17.90 |       3.50 |        47.95 |       21 | 2026-02-21
+   3 | good  |      21 |     38.48 |       3.47 |       119.66 |       60 | 2026-04-22
+   4 | good  |      60 |     85.32 |       3.43 |       291.16 |      291 | 2027-02-07
+   5 | good  |     291 |    239.91 |       3.40 |       879.83 |      365 | 2028-02-07
+   6 | good  |     365 |    494.25 |       3.37 |      1878.27 |      365 | 2029-02-06
