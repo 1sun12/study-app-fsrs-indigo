@@ -53,8 +53,9 @@ DESKTOP
 		desk="$(desktop_dir)"
 		if [ -d "$desk" ]; then
 			install_file 755 "$entry" "$desk/indigo.desktop"
-			command -v gio >/dev/null 2>&1 &&
+			if command -v gio >/dev/null 2>&1; then
 				gio set "$desk/indigo.desktop" metadata::trusted true 2>/dev/null || true
+			fi
 		fi
 	fi
 	rm -f "$entry"
@@ -66,10 +67,12 @@ DESKTOP
 }
 
 refresh_caches() {
-	command -v update-desktop-database >/dev/null 2>&1 &&
+	if command -v update-desktop-database >/dev/null 2>&1; then
 		update-desktop-database -q "$PREFIX/share/applications" 2>/dev/null || true
-	command -v gtk-update-icon-cache >/dev/null 2>&1 &&
+	fi
+	if command -v gtk-update-icon-cache >/dev/null 2>&1; then
 		gtk-update-icon-cache -q -f -t "$PREFIX/share/icons/hicolor" 2>/dev/null || true
+	fi
 }
 
 # PIDs of this user's running installed Indigo (matched by executable, so a dev build from
