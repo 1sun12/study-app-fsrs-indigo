@@ -35,9 +35,9 @@ Grab the latest release here: **[Releases](https://github.com/1sun12/study-app-f
 
 | OS | File |
 |---|---|
-| Mac (Apple Silicon and Intel) | `Indigo_0.3.0_universal.dmg` |
-| Windows 10 / 11 | `Indigo_0.3.0_x64-setup.exe` (or the `.msi`) |
-| Linux | `Indigo_0.3.0_amd64.AppImage`, `.deb` or `.rpm` |
+| Mac (Apple Silicon and Intel) | `Indigo_0.3.1_universal.dmg` |
+| Windows 10 / 11 | `Indigo_0.3.1_x64-setup.exe` (or the `.msi`) |
+| Linux | `Indigo_0.3.1_amd64.AppImage`, `.deb` or `.rpm` |
 
 Each release also has a plain `indigo-cli` binary for every OS (`indigo-cli-Linux-X64`, `indigo-cli-macOS-ARM64`, `indigo-cli-Windows-X64.exe`). It's optional; see [Using Indigo with an AI assistant](#using-indigo-with-an-ai-assistant-indigo-cli).
 
@@ -62,7 +62,7 @@ xattr -cr /Applications/Indigo.app
 
 ### Windows
 
-1. Run `Indigo_0.3.0_x64-setup.exe`
+1. Run `Indigo_0.3.1_x64-setup.exe`
 2. If you get **"Windows protected your PC"** (SmartScreen), click **More info → Run anyway**
 3. Indigo shows up in the Start menu when it's done
 
@@ -71,8 +71,8 @@ xattr -cr /Applications/Indigo.app
 AppImage (works on most distros, nothing to install):
 
 ```bash
-chmod +x Indigo_0.3.0_amd64.AppImage
-./Indigo_0.3.0_amd64.AppImage
+chmod +x Indigo_0.3.1_amd64.AppImage
+./Indigo_0.3.1_amd64.AppImage
 ```
 
 * If it won't start on Ubuntu 22.04 or newer, it needs FUSE 2: `sudo apt install libfuse2` (on 24.04 the package is `libfuse2t64`)
@@ -80,13 +80,13 @@ chmod +x Indigo_0.3.0_amd64.AppImage
 Debian / Ubuntu / Pop!_OS:
 
 ```bash
-sudo apt install ./Indigo_0.3.0_amd64.deb
+sudo apt install ./Indigo_0.3.1_amd64.deb
 ```
 
 Fedora / RHEL:
 
 ```bash
-sudo dnf install ./Indigo-0.3.0-1.x86_64.rpm
+sudo dnf install ./Indigo-0.3.1-1.x86_64.rpm
 ```
 
 ### Linux, the install script (what I use)

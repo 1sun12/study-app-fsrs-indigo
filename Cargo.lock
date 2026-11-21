@@ -2201,7 +2201,7 @@ dependencies = [
 
 [[package]]
 name = "indigo"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "arboard",
  "axum",
@@ -2225,7 +2225,7 @@ dependencies = [
 
 [[package]]
 name = "indigo-cli"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "chrono",
  "clap",
@@ -2238,7 +2238,7 @@ dependencies = [
 
 [[package]]
 name = "indigo-core"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "chrono",
  "clap",
