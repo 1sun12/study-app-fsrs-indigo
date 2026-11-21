@@ -12,7 +12,7 @@
 
 ## What is this
 
-Indigo is an app I made to help life long learners hold on to what they learn, easier and for longer. I originally made it to help me memorize code, since I kept looking up the same snippets over and over again.
+Indigo is an app I made to help life long learners hold on to what they learn, easier and for longer. I originally made it to help me memorize code, since I kept looking up the same snippets over and over again. Various other spaced repetition platforms did not meet the needs I was looking for, and I found creating my own vision was best. I personally have used Indigo for ++1yr to become fluent in C; Great for technical interviews.
 
 It's a flash card app at heart, but built around actually doing the thing instead of just flipping a card over.
 
